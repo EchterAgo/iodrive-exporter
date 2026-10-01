@@ -1,0 +1,14 @@
+# Allow the exporter to run fio-status without a password when the service is
+# not running as root. Install as /etc/sudoers.d/iodrive-exporter (chmod 0440)
+# and create the user:
+#
+#   sudo useradd --system --no-create-home --shell /usr/sbin/nologin iodrive-exporter
+#   sudo install -m 0440 iodrive-exporter.sudoers /etc/sudoers.d/iodrive-exporter
+#
+# Then start the exporter with --sudo and set User=iodrive-exporter in the unit.
+#
+# NOTE: fio-status has no argument sanitisation, so this grants broad read
+# access to device status. It only reports status (-a -f j -u are fixed here),
+# but a NOPASSWD sudo rule is still a privilege grant: restrict it to hosts
+# where you trust the exporter user.
+iodrive-exporter ALL=(root) NOPASSWD: SETENV: /usr/bin/fio-status -a -f j -u

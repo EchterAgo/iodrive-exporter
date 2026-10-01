@@ -1,0 +1,22 @@
+[Unit]
+Description=Prometheus exporter for Fusion-io ioDrive (fio-status)
+After=network.target
+
+[Service]
+Type=simple
+# fio-status requires root; running the service as root is the simplest setup.
+# To run unprivileged instead, set User=iodrive-exporter and install the
+# sudoers drop-in (see iodrive-exporter.sudoers), then add --sudo to ExecStart.
+User=root
+ExecStart=/usr/bin/python3 /opt/iodrive-exporter/iodrive_exporter.py \
+    --web.listen-address=0.0.0.0 \
+    --web.port=9895
+Restart=on-failure
+RestartSec=5
+
+# Hardening that is compatible with needing to exec fio-status as root.
+NoNewPrivileges=false
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
